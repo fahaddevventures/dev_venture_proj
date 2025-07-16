@@ -4,13 +4,13 @@ from app.extensions import db
 from app.models.proposal import Proposal
 from app.models.upwork_job import UpworkJob
 from app.schemas.proposal_schema import ProposalSchema
-from app.utils.gemini import assess_proposal_from_job, extract_json_from_text
+from app.utils.gemini import assess_proposal_from_job
 from app.enums import ProposalStatusEnum
 from app.enums import UserRoleEnum
 from app.utils.role_required import role_required
 
 
-proposal_bp = Blueprint('proposal', __name__)
+proposal_bp = Blueprint('proposal', __name__,url_prefix='/proposals')
 
 proposal_schema = ProposalSchema(session=db.session)
 proposal_list_schema = ProposalSchema(many=True)
@@ -99,3 +99,10 @@ def generate_proposal_from_job(job_id):
 def list_proposals():
     proposals = Proposal.query.order_by(Proposal.created_at.desc()).all()
     return render_template('proposals/proposal_list.html', proposals=proposals)
+
+
+@proposal_bp.route('/view/<int:proposal_id>', methods=['GET'])
+@login_required
+def view_proposal(proposal_id):
+    proposal = Proposal.query.get_or_404(proposal_id)
+    return render_template('proposals/proposal_details.html', proposal=proposal)

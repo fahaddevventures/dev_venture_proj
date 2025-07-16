@@ -102,3 +102,10 @@ def bulk_create_upwork_jobs():
         "skipped_existing_job_ids": skipped_jobs,
         "errors": errors
     }), 207  # 207 Multi-Status: Some succeeded, some failed
+
+@job_bp.route('/id-title', methods=['GET'])
+@login_required
+def get_job_id_and_title():
+    jobs = UpworkJob.query.with_entities(UpworkJob.id, UpworkJob.title).all()
+    result = [{"id": job.id, "title": job.title} for job in jobs]
+    return jsonify(result), 200

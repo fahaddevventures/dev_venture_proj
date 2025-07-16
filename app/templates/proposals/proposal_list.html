@@ -29,7 +29,6 @@
           <th>Connects</th>
           <th>Cost</th>
           <th>Earnings</th>
-          <th>Status</th>
           <th>Created At</th>
           <th>Actions</th>
         </tr>
@@ -43,10 +42,9 @@
           <td>{{ proposal.connects_required }}</td>
           <td>${{ proposal.expected_cost }}</td>
           <td>${{ proposal.expected_earnings }}</td>
-          <td><span class="badge bg-secondary">{{ proposal.status.value }}</span></td>
           <td>{{ proposal.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
           <td>
-            <!-- <a href="{{ url_for('proposal.view_proposal', proposal_id=proposal.id) }}" class="btn btn-sm btn-outline-primary">View</a> -->
+            <a href="{{ url_for('proposal.view_proposal', proposal_id=proposal.id) }}" class="btn btn-sm btn-outline-primary">View</a>
           </td>
         </tr>
         {% else %}

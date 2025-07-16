@@ -15,23 +15,30 @@
 
     <!-- Jobs -->
     {% if current_user.role.name in ['admin', 'salesman'] %}
-      <a href="{{ url_for('job.get_jobs') }}" class="nav-link fw-bold mt-2">Jobs</a>
-      <div class="ms-3">
+      <span  class="fw-bold mt-2">Jobs</span>
+      <div class="ms-2">
         <a href="{{ url_for('job.get_jobs') }}" class="nav-link">Scrap Jobs</a>
         <a href="{{ url_for('job.list_jobs') }}" class="nav-link">All Jobs</a>
       </div>
     {% endif %}
     <!-- Proposals -->
     {% if current_user.role.name in ['admin', 'teamlead', 'salesman'] %}
-      <a href="{{ url_for('job.get_jobs') }}" class="nav-link fw-bold mt-2">Proposals</a>
-      <div class="ms-3">
+      <span  class="fw-bold mt-2">Proposals</span>
+      <div class="ms-2">
         <a href="{{ url_for('proposal.list_proposals') }}" class="nav-link">All Proposals</a>
+      </div>
+    {% endif %}
+        <!-- Projects -->
+    {% if current_user.role.name in ['admin', 'teamlead', 'salesman'] %}
+      <span  class="fw-bold mt-2">Projects</span>
+      <div class="ms-2">
+        <a href="{{ url_for('project.create_project') }}" class="nav-link">Create Project</a>
       </div>
     {% endif %}
     <!-- Users -->
     {% if current_user.role.name in ['admin'] %}
-      <a href="{{ url_for('user.user_analytics') }}" class="nav-link fw-bold mt-2">Users</a>
-      <div class="ms-3">
+      <span  class="fw-bold mt-2">Users</span>
+      <div class="ms-2">
         <a href="{{ url_for('user.add_user') }}" class="nav-link">Add User</a>
         <a href="{{ url_for('user.get_all_users') }}" class="nav-link">All Users</a>
       </div>
