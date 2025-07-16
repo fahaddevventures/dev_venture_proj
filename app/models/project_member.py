@@ -16,3 +16,5 @@ class ProjectMember(db.Model):
 
     def __repr__(self):
         return f"<ProjectMember user_id={self.user_id}, project_id={self.project_id}>"
+
+

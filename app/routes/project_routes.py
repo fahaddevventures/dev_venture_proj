@@ -4,6 +4,7 @@ from app.models.project import Project
 from app.models.upwork_job import UpworkJob
 from app.models.proposal import Proposal
 from app.models.user import User
+from app.models.project_member import ProjectMember
 from app.schemas.project_schema import ProjectSchema
 from app.enums import ProjectStatusEnum, UserRoleEnum
 from flask_login import login_required
@@ -129,3 +130,54 @@ def update_project(project_id):
             flash(f"Error updating project: {str(e)}", "danger")
 
     return render_template("projects/update_project.html", project=project, jobs=jobs, team_leads=team_leads, proposals=proposals, statuses=ProjectStatusEnum)
+
+
+@project_bp.route("/assign-members/<int:project_id>", methods=["GET", "POST"])
+@login_required
+@role_required(UserRoleEnum.admin, UserRoleEnum.team_lead)
+def assign_project_members(project_id):
+    project = Project.query.get_or_404(project_id)
+    users = User.query.filter(User.role.in_([
+        UserRoleEnum.team_lead, UserRoleEnum.employee, UserRoleEnum.salesman
+    ])).all()
+
+    if request.method == "POST":
+        selected_user_ids = request.form.getlist("user_ids")
+
+        # Clear existing members
+        ProjectMember.query.filter_by(project_id=project.id).delete()
+
+        for user_id in selected_user_ids:
+            role = request.form.get(f"role_in_project_{user_id}")
+            member = ProjectMember(
+                user_id=int(user_id),
+                project_id=project.id,
+                role_in_project=role
+            )
+            db.session.add(member)
+
+        try:
+            db.session.commit()
+            flash("Team members assigned successfully!", "success")
+            return redirect(url_for("project.list_projects"))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error assigning team members: {str(e)}", "danger")
+
+    return render_template("projects/assign_members.html", project=project, users=users)
+
+@project_bp.route('/delete/<int:project_id>', methods=['POST'])
+@login_required
+@role_required(UserRoleEnum.admin)
+def delete_project(project_id):
+    project = Project.query.get_or_404(project_id)
+
+    try:
+        db.session.delete(project)
+        db.session.commit()
+        flash("Project deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting project: {str(e)}", "danger")
+
+    return redirect(url_for('project.list_projects'))

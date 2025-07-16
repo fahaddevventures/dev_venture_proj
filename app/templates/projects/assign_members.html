@@ -1,0 +1,49 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Assign Members - {{ project.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <h2>Assign Members to Project: {{ project.name }}</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST">
+    <table class="table table-bordered bg-white align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Select</th>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role in Project</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          {% set existing = project.members | selectattr('user_id', 'equalto', user.id) | list | first %}
+          <tr>
+            <td>
+              <input type="checkbox" name="user_ids" value="{{ user.id }}" {% if existing %}checked{% endif %}>
+            </td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <input type="text"
+                     class="form-control"
+                     name="role_in_project_{{ user.id }}"
+                     value="{{ existing.role_in_project if existing else '' }}"
+                     placeholder="e.g. Backend Dev, QA">
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">Assign Members</button>
+  </form>
+</div>
+{% endblock %}
