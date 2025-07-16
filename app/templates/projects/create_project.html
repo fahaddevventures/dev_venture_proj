@@ -39,15 +39,16 @@
       </select>
     </div>
 
-    <div class="mb-3">
-      <label for="proposal_id" class="form-label">Linked Proposal (Optional)</label>
-      <select name="proposal_id" class="form-select">
-        <option value="">-- Select Proposal --</option>
-        {% for proposal in proposals %}
-          <option value="{{ proposal.id }}">{{ proposal.id }}</option>
-        {% endfor %}
-      </select>
-    </div>
+<div class="mb-3">
+  <label for="proposal_id" class="form-label">Linked Proposal</label>
+  <select name="proposal_id" class="form-select" required>
+    <option value="">-- Select Proposal by Job Title --</option>
+    {% for proposal in proposals %}
+      <option value="{{ proposal.id }}">{{ proposal.job_title }}</option>
+    {% endfor %}
+  </select>
+</div>
+
 
     <div class="mb-3">
       <label for="status" class="form-label">Status</label>

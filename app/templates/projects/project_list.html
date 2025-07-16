@@ -1,0 +1,83 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Projects List{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">All Projects</h2>
+    <a href="{{ url_for('project.create_project') }}" class="btn btn-primary">Create New Project</a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover bg-white align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Project Name</th>
+          <th>Job Title</th>
+          <th>Team Lead</th>
+          <th>Status</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in projects %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ project.name }}</td>
+          <td>{{ project.job.title if project.job else 'N/A' }}</td>
+          <td>{{ project.team_lead.first_name }} {{ project.team_lead.last_name }}</td>
+          <td><span class="badge bg-secondary">{{ project.status.value }}</span></td>
+          <td>{{ project.start_date.strftime('%Y-%m-%d') if project.start_date else '-' }}</td>
+          <td>{{ project.end_date.strftime('%Y-%m-%d') if project.end_date else '-' }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#projectModal{{ project.id }}">View</button>
+          </td>
+        </tr>
+
+        <!-- 🔍 Modal -->
+        <div class="modal fade" id="projectModal{{ project.id }}" tabindex="-1" aria-labelledby="projectModalLabel{{ project.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="projectModalLabel{{ project.id }}">Project: {{ project.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Job Title:</strong> {{ project.job.title if project.job else 'N/A' }}</p>
+                <p><strong>Team Lead:</strong> {{ project.team_lead.first_name }} {{ project.team_lead.last_name }}</p>
+                <p><strong>Proposal ID:</strong> {{ project.proposal_id }}</p>
+                <p><strong>Status:</strong> {{ project.status.value }}</p>
+                <p><strong>Description:</strong><br>{{ project.description or 'N/A' }}</p>
+                <p><strong>Start Date:</strong> {{ project.start_date.strftime('%Y-%m-%d') if project.start_date else '-' }}</p>
+                <p><strong>End Date:</strong> {{ project.end_date.strftime('%Y-%m-%d') if project.end_date else '-' }}</p>
+                <p><strong>Created At:</strong> {{ project.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Modal -->
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

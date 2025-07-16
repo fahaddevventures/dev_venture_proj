@@ -15,13 +15,21 @@ project_schema = ProjectSchema(session=db.session)
 project_list_schema = ProjectSchema(many=True)
 
 
+from datetime import datetime
+
 @project_bp.route("/create", methods=["GET", "POST"])
 @login_required
 @role_required(UserRoleEnum.admin, UserRoleEnum.team_lead)
 def create_project():
     jobs = UpworkJob.query.with_entities(UpworkJob.id, UpworkJob.title).all()
     team_leads = User.query.filter_by(role=UserRoleEnum.team_lead).all()
-    proposals = Proposal.query.with_entities(Proposal.id).all()
+
+    proposals = (
+        Proposal.query
+        .join(UpworkJob, Proposal.job_id == UpworkJob.id)
+        .with_entities(Proposal.id, UpworkJob.title.label("job_title"))
+        .all()
+    )
 
     if request.method == "POST":
         name = request.form.get("name")
@@ -30,11 +38,18 @@ def create_project():
         team_lead_id = request.form.get("team_lead_id")
         proposal_id = request.form.get("proposal_id")
         status = request.form.get("status")
-        start_date = request.form.get("start_date") or None
-        end_date = request.form.get("end_date") or None
+        start_date_str = request.form.get("start_date")
+        end_date_str = request.form.get("end_date")
 
-        if not name or not job_id or not team_lead_id:
-            flash("Project name, job, and team lead are required.", "danger")
+        if not name or not job_id or not team_lead_id or not proposal_id:
+            flash("All fields including linked proposal are required.", "danger")
+            return render_template("projects/create_project.html", jobs=jobs, team_leads=team_leads, proposals=proposals, statuses=ProjectStatusEnum)
+
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else None
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
+
+        if start_date and end_date and end_date < start_date:
+            flash("End date cannot be earlier than start date.", "danger")
             return render_template("projects/create_project.html", jobs=jobs, team_leads=team_leads, proposals=proposals, statuses=ProjectStatusEnum)
 
         project = Project(
@@ -42,7 +57,7 @@ def create_project():
             description=description,
             job_id=job_id,
             team_lead_id=team_lead_id,
-            proposal_id=proposal_id or None,
+            proposal_id=proposal_id,
             status=ProjectStatusEnum[status],
             start_date=start_date,
             end_date=end_date
@@ -58,3 +73,11 @@ def create_project():
             flash(f"Error creating project: {str(e)}", "danger")
 
     return render_template("projects/create_project.html", jobs=jobs, team_leads=team_leads, proposals=proposals, statuses=ProjectStatusEnum)
+
+
+@project_bp.route('/all', methods=['GET'])
+@login_required
+@role_required(UserRoleEnum.admin, UserRoleEnum.team_lead)
+def list_projects():
+    projects = Project.query.order_by(Project.created_at.desc()).all()
+    return render_template('projects/project_list.html', projects=projects)
