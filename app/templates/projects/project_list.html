@@ -9,16 +9,7 @@
     <a href="{{ url_for('project.create_project') }}" class="btn btn-primary">Create New Project</a>
   </div>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+
 
   <div class="table-responsive">
     <table class="table table-bordered table-striped table-hover bg-white align-middle">
@@ -68,8 +59,9 @@
                 <p><strong>Created At:</strong> {{ project.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
+  <a href="{{ url_for('project.update_project', project_id=project.id) }}" class="btn btn-warning">Update</a>
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
             </div>
           </div>
         </div>

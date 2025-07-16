@@ -1,0 +1,78 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Update Project{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <h2>Update Project</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST">
+    <div class="mb-3">
+      <label for="name" class="form-label">Project Name</label>
+      <input type="text" class="form-control" name="name" value="{{ project.name }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" name="description">{{ project.description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Related Job</label>
+      <select name="job_id" class="form-select" required>
+        {% for job in jobs %}
+          <option value="{{ job.id }}" {% if job.id == project.job_id %}selected{% endif %}>{{ job.title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Team Lead</label>
+      <select name="team_lead_id" class="form-select" required>
+        {% for lead in team_leads %}
+          <option value="{{ lead.id }}" {% if lead.id == project.team_lead_id %}selected{% endif %}>{{ lead.first_name }} {{ lead.last_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Linked Proposal</label>
+      <select name="proposal_id" class="form-select" required>
+        {% for proposal in proposals %}
+          <option value="{{ proposal.id }}" {% if proposal.id == project.proposal_id %}selected{% endif %}>{{ proposal.job_title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Status</label>
+      <select name="status" class="form-select" required>
+        {% for status in statuses %}
+          <option value="{{ status.name }}" {% if status.name == project.status.name %}selected{% endif %}>{{ status.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" name="start_date" value="{{ project.start_date.strftime('%Y-%m-%d') if project.start_date else '' }}">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" name="end_date" value="{{ project.end_date.strftime('%Y-%m-%d') if project.end_date else '' }}">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Update Project</button>
+  </form>
+</div>
+{% endblock %}
