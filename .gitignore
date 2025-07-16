@@ -1,0 +1,67 @@
+# 🐍 Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.so
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# 🐍 Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+pip-wheel-metadata/
+
+# 🔐 Environment Configs
+.env
+*.env
+.env.*
+
+# 🧪 Testing Artifacts
+.coverage
+coverage.xml
+htmlcov/
+.cache/
+.tox/
+.pytest_cache/
+
+# 🧱 Flask-Migrate
+migrations/versions/__pycache__/
+migrations/versions/*.pyc
+migrations/versions/*.pyo
+
+# 🗃 SQLite (if ever used)
+*.sqlite3
+*.db
+
+# 📦 Node/React (if frontend in same repo)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+build/
+dist/
+.next/
+
+# 🧪 IDE/Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 📝 OS Files
+.DS_Store
+Thumbs.db
+
+# 🔍 Logs
+*.log
+
+# 🐘 MySQL dumps or data
+*.sql
+*.dump

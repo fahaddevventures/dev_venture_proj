@@ -1,0 +1,53 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Add New User{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <h2 class="mb-4">Add New User</h2>
+
+
+  <form method="POST">
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label>First Name</label>
+        <input type="text" name="first_name" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label>Last Name</label>
+        <input type="text" name="last_name" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label>Contact</label>
+        <input type="text" name="contact" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label>Role</label>
+        <select name="role" class="form-select" required>
+          {% for role in UserRoleEnum %}
+            <option value="{{ role.name }}">{{ role.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Add User</button>
+    <a href="{{ url_for('user.get_all_users') }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

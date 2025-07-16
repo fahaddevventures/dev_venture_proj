@@ -1,0 +1,56 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}User Analytics{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <h2 class="mb-4">User Analytics</h2>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">Total Users</h5>
+          <p class="display-6">{{ total_users }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 bg-light">
+        <div class="card-body">
+          <h5 class="card-title">Admins</h5>
+          <p class="display-6">{{ total_admins }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 bg-light">
+        <div class="card-body">
+          <h5 class="card-title">Team Leads</h5>
+          <p class="display-6">{{ total_team_leads }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 bg-light">
+        <div class="card-body">
+          <h5 class="card-title">Employees</h5>
+          <p class="display-6">{{ total_employees }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 bg-light">
+        <div class="card-body">
+          <h5 class="card-title">Salesmen</h5>
+          <p class="display-6">{{ total_salesmen }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Scrape Upwork Jobs - Dev Ventures{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid mt-3">
+  <h3 class="mb-4">Scraping Upwork Jobs</h3>
+
+  <div id="loadingSpinner" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Scraping jobs... Please wait.</p>
+  </div>
+
+  <div id="resultArea" style="display: none;">
+    <div class="alert alert-success" id="successMessage" style="display: none;"></div>
+    <div class="alert alert-warning" id="skipMessage" style="display: none;"></div>
+    <div class="alert alert-danger" id="errorMessage" style="display: none;"></div>
+
+    <div class="table-responsive mt-4">
+      <table class="table table-bordered table-hover" id="jobsTable">
+        <thead class="table-light">
+          <tr>
+            <th>Job Title</th>
+            <th>Client Country</th>
+            <th>Budget</th>
+            <th>Feasibility</th>
+            <th>Posted At</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    try {
+      const response = await fetch("/jobs/bulk-create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const data = await response.json();
+
+      // Hide loading spinner
+      document.getElementById("loadingSpinner").style.display = "none";
+      document.getElementById("resultArea").style.display = "block";
+
+      if (response.status === 207 || response.status === 201 || response.status === 200) {
+        if (data.message) {
+          document.getElementById("successMessage").innerText = data.message;
+          document.getElementById("successMessage").style.display = "block";
+        }
+
+        if (data.skipped_existing_job_ids?.length) {
+          document.getElementById("skipMessage").innerText = 
+            `Skipped ${data.skipped_existing_job_ids.length} existing jobs.`;
+          document.getElementById("skipMessage").style.display = "block";
+        }
+
+        if (data.errors?.length) {
+          document.getElementById("errorMessage").innerText =
+            `Encountered ${data.errors.length} error(s). See console for details.`;
+          document.getElementById("errorMessage").style.display = "block";
+          console.error("Errors:", data.errors);
+        }
+
+        const tbody = document.querySelector("#jobsTable tbody");
+        data.created.forEach(job => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${job.title}</td>
+            <td>${job.client_country || 'N/A'}</td>
+            <td>$${job.budget || 'N/A'}</td>
+            <td><span class="badge bg-${job.feasibility_status === 'feasible' ? 'success' : 'danger'}">
+              ${job.feasibility_status}</span></td>
+            <td>${job.posted_at ? job.posted_at.slice(0, 10) : 'N/A'}</td>
+            <td><a href="${job.job_url}" target="_blank">🔗 View</a></td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        document.getElementById("errorMessage").innerText = data.error || "Something went wrong.";
+        document.getElementById("errorMessage").style.display = "block";
+      }
+    } catch (err) {
+      document.getElementById("loadingSpinner").style.display = "none";
+      document.getElementById("resultArea").style.display = "block";
+      document.getElementById("errorMessage").innerText = "Network or server error.";
+      document.getElementById("errorMessage").style.display = "block";
+      console.error(err);
+    }
+  });
+</script>
+{% endblock %}

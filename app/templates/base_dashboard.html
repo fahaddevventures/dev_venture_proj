@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Dev Ventures{% endblock %}
+
+{% block content %}
+
+
+<div class="dashboard-container">
+  <!-- Sidebar -->
+<aside class="sidebar">
+  <h5 class="text-center fw-bold mb-4">Dev Ventures</h5>
+  <nav class="nav flex-column">
+
+    <!-- Dashboard -->
+    <a href="{{ url_for('dashboard.index') }}" class="nav-link fw-bold">Dashboard</a>
+
+    <!-- JObs -->
+    {% if current_user.role.name in ['admin', 'salesman'] %}
+      <a href="{{ url_for('job.get_jobs') }}" class="nav-link fw-bold mt-2">Jobs</a>
+      <div class="ms-3">
+        <a href="{{ url_for('job.get_jobs') }}" class="nav-link">Scrap Jobs</a>
+        <a href="{{ url_for('job.list_jobs') }}" class="nav-link">All Jobs</a>
+      </div>
+    {% endif %}
+    <!-- Users -->
+    {% if current_user.role.name in ['admin'] %}
+      <a href="{{ url_for('user.user_analytics') }}" class="nav-link fw-bold mt-2">Users</a>
+      <div class="ms-3">
+        <a href="{{ url_for('user.add_user') }}" class="nav-link">Add User</a>
+        <a href="{{ url_for('user.get_all_users') }}" class="nav-link">All Users</a>
+      </div>
+    {% endif %}
+
+
+
+
+  </nav>
+</aside>
+
+
+
+
+
+  <!-- Main Content Area -->
+  <div class="main-content-area">
+    <!-- Topbar -->
+    <header class="topbar d-flex justify-content-between align-items-center px-4 py-3 bg-light border-bottom" style="min-height: 64px;">
+
+      <div>
+        Welcome, {{ current_user.first_name }} <small class="text-muted">({{ current_user.role.name | capitalize }})</small>
+      </div>
+      <form method="POST" action="{{ url_for('auth.logout') }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+      </form>
+    </header>
+
+    <!-- Page Content -->
+    <main class="content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block dashboard_content %}
+      <h2>Welcome to your Dashboard</h2>
+      {% endblock %}
+    </main>
+  </div>
+</div>
+
+{% endblock %}
