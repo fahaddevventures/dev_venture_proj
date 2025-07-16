@@ -5,6 +5,7 @@
 
 
 <div class="dashboard-container">
+  
   <!-- Sidebar -->
 <aside class="sidebar">
   <h5 class="text-center fw-bold mb-4">Dev Ventures</h5>
@@ -22,18 +23,27 @@
       </div>
     {% endif %}
     <!-- Proposals -->
-    {% if current_user.role.name in ['admin', 'teamlead', 'salesman'] %}
+    {% if current_user.role.name in ['admin', 'team_lead', 'salesman'] %}
       <span  class="fw-bold mt-2">Proposals</span>
       <div class="ms-2">
         <a href="{{ url_for('proposal.list_proposals') }}" class="nav-link">All Proposals</a>
       </div>
     {% endif %}
         <!-- Projects -->
-    {% if current_user.role.name in ['admin', 'teamlead', 'salesman'] %}
+    {% if current_user.role.name in ['admin', 'team_lead', 'salesman'] %}
       <span  class="fw-bold mt-2">Projects</span>
       <div class="ms-2">
         <a href="{{ url_for('project.create_project') }}" class="nav-link">Create Project</a>
                 <a href="{{ url_for('project.list_projects') }}" class="nav-link">All Project</a>
+      </div>
+    {% endif %}
+    <!-- TAsks -->
+    {% if current_user.role.name in ['admin', 'team_lead', 'employee'] %}
+      <span  class="fw-bold mt-2">Tasks</span>
+      <div class="ms-2">
+        <a href="{{ url_for('task.create_task') }}" class="nav-link">Create Task</a>
+        <a href="{{ url_for('task.list_tasks') }}" class="nav-link">All Tasks</a>
+                
       </div>
     {% endif %}
     <!-- Users -->

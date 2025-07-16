@@ -16,11 +16,9 @@ class ContractTypeEnum(enum.Enum):
     unknown = 'Unknown'
 
 class TaskStatusEnum(enum.Enum):
-    backlog = 'backlog'
     todo = 'todo'
     in_progress = 'in_progress'
-    in_review = 'in_review'
-    done = 'done'
+    completed = 'completed'
 
 class TaskPriorityEnum(enum.Enum):
     low = 'low'

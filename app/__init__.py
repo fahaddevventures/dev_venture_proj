@@ -15,6 +15,7 @@ from app.routes.dashboard_routes import dashboard_bp
 from app.routes.jobs_routes import job_bp
 from app.routes.proposal_routes import proposal_bp
 from app.routes.project_routes import project_bp
+from app.routes.task_routes import task_bp
 
 login_manager = LoginManager()
 
@@ -37,6 +38,7 @@ def create_app():
     app.register_blueprint(job_bp)
     app.register_blueprint(proposal_bp)
     app.register_blueprint(project_bp)
+    app.register_blueprint(task_bp)
 
     @app.route("/", methods=["GET"])
     def home():

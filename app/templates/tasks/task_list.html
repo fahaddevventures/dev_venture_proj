@@ -1,0 +1,109 @@
+{% extends "base_dashboard.html" %}
+{% block title %}All Tasks{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <h2 class="mb-4">All Tasks</h2>
+
+
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Project</th>
+          <th>Assigned To</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ task.title }}</td>
+          <td>{{ task.project.name }}</td>
+          <td>{{ task.assignee.first_name }} {{ task.assignee.last_name }}</td>
+          <td>{{ task.status.value }}</td>
+          <td>{{ task.priority.value }}</td>
+          <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</td>
+          <td>{{ task.created_at.strftime('%Y-%m-%d') }}</td>
+          <td>
+            <!-- Update Button -->
+<a href="{{ url_for('task.update_task', task_id=task.id) }}" class="btn btn-sm btn-warning">
+  Update
+</a>
+<!-- View Button -->
+  <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewTaskModal{{ task.id }}">
+    View
+  </button>
+  <!-- Delete Button (triggers modal) -->
+<button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}">
+  Delete
+</button>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="10" class="text-center">No tasks found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% for task in tasks %}
+<div class="modal fade" id="viewTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="viewTaskLabel{{ task.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewTaskLabel{{ task.id }}">Task: {{ task.title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Project:</strong> {{ task.project.name }}</p>
+        <p><strong>Assigned To:</strong> {{ task.assignee.first_name }} {{ task.assignee.last_name }}</p>
+        <p><strong>Status:</strong> {{ task.status.value }}</p>
+        <p><strong>Priority:</strong> {{ task.priority.value }}</p>
+        <p><strong>Due Date:</strong> {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</p>
+        <p><strong>Description:</strong> {{ task.description or 'No description provided.' }}</p>
+        <p><strong>Deliverables:</strong> {{ task.deliverables }}</p>
+        <p><strong>Created At:</strong> {{ task.created_at.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Created By:</strong> {{ task.creator.first_name }} {{ task.creator.last_name }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ task.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel{{ task.id }}">Confirm Delete</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete the task "<strong>{{ task.title }}</strong>"?
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="{{ url_for('task.delete_task', task_id=task.id) }}">
+          <input type="hidden" name="confirm" value="yes">
+          <button type="submit" class="btn btn-danger">Yes, Delete</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+
+  </div>
+</div>
+{% endblock %}

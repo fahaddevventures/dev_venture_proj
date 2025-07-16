@@ -1,0 +1,57 @@
+{% extends "base_dashboard.html" %}
+{% block title %}Analytics Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <h2 class="mb-4">Dashboard Analytics</h2>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-start border-primary border-4">
+        <div class="card-body">
+          <h5 class="card-title">Total Users</h5>
+          <h2>{{ total_users }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-start border-success border-4">
+        <div class="card-body">
+          <h5 class="card-title">Total Projects</h5>
+          <h2>{{ total_projects }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-start border-info border-4">
+        <div class="card-body">
+          <h5 class="card-title">Total Proposals</h5>
+          <h2>{{ total_proposals }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-12">
+      <h4>Users by Role</h4>
+      <table class="table table-striped table-bordered mt-3">
+        <thead class="table-light">
+          <tr>
+            <th>Role</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Admins</td><td>{{ role_data.admin }}</td></tr>
+          <tr><td>Team Leads</td><td>{{ role_data.team_lead }}</td></tr>
+          <tr><td>Salesmen</td><td>{{ role_data.salesman }}</td></tr>
+          <tr><td>Employees</td><td>{{ role_data.employee }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
