@@ -1,0 +1,61 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}All Proposals{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">All Proposals</h2>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover bg-white align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Job Title</th>
+          <th>Feasibility Score</th>
+          <th>Connects</th>
+          <th>Cost</th>
+          <th>Earnings</th>
+          <th>Status</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for proposal in proposals %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ proposal.job.title if proposal.job else "N/A" }}</td>
+          <td>{{ proposal.feasibility_score }}/100</td>
+          <td>{{ proposal.connects_required }}</td>
+          <td>${{ proposal.expected_cost }}</td>
+          <td>${{ proposal.expected_earnings }}</td>
+          <td><span class="badge bg-secondary">{{ proposal.status.value }}</span></td>
+          <td>{{ proposal.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            <!-- <a href="{{ url_for('proposal.view_proposal', proposal_id=proposal.id) }}" class="btn btn-sm btn-outline-primary">View</a> -->
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" class="text-center text-muted">No proposals found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

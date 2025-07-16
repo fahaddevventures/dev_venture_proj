@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify,render_template
+from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models.proposal import Proposal
@@ -15,17 +15,19 @@ proposal_bp = Blueprint('proposal', __name__)
 proposal_schema = ProposalSchema(session=db.session)
 proposal_list_schema = ProposalSchema(many=True)
 
+
 @proposal_bp.route('/from-job/<string:job_id>', methods=['POST'])
 @login_required
-@role_required(UserRoleEnum.admin, UserRoleEnum.team_lead, UserRoleEnum.salesman)
+@role_required(UserRoleEnum.admin, UserRoleEnum.salesman)
 def generate_proposal_from_job(job_id):
     try:
         # 1. Fetch the Upwork job
         job = UpworkJob.query.filter_by(job_id=job_id).first()
         if not job:
-            return jsonify({"error": f"Upwork job with ID '{job_id}' not found"}), 404
+            flash(f"Upwork job with ID '{job_id}' not found.", "danger")
+            return redirect(url_for('job.job_list'))  # Adjust if needed
 
-        # 2. Prepare data for Gemini (cleaned + no duplicate keys)
+        # 2. Prepare data for Gemini AI
         job_data = {
             "job_id": job.job_id,
             "title": job.title,
@@ -56,16 +58,9 @@ def generate_proposal_from_job(job_id):
 
         # 3. AI processing
         ai_result = assess_proposal_from_job(job_data)
-        # print(ai_result)
+        parsed_data = ai_result  # You may call `extract_json_from_text()` here if needed
 
-        try:
-            # parsed_data = extract_json_from_text(ai_result)
-            parsed_data = ai_result
-            print(parsed_data)
-        except ValueError as e:
-            print("Error:", e)
-
-        # 4. Create proposal record
+        # 4. Save proposal to DB
         proposal_data = Proposal(
             job_id=job.id,
             generated_by=current_user.id,
@@ -87,14 +82,13 @@ def generate_proposal_from_job(job_id):
         db.session.add(proposal_data)
         db.session.commit()
 
-        return jsonify({
-            "message": "Proposal generated successfully using Gemini AI.",
-            "proposal": proposal_schema.dump(proposal_data)
-        }), 201
+        flash("Proposal generated successfully using Gemini AI.", "success")
+        return render_template("proposals/proposal.html", proposal=proposal_data)
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Internal server error: {str(e)}"}), 500
+        flash(f"An error occurred while generating the proposal: {str(e)}", "danger")
+        return redirect(url_for('job.job_list'))  # fallback redirect
 
 
 
@@ -104,4 +98,4 @@ def generate_proposal_from_job(job_id):
 @role_required(UserRoleEnum.admin, UserRoleEnum.salesman, UserRoleEnum.team_lead)
 def list_proposals():
     proposals = Proposal.query.order_by(Proposal.created_at.desc()).all()
-    return render_template('dashboard/proposals.html', proposals=proposals)
+    return render_template('proposals/proposal_list.html', proposals=proposals)
